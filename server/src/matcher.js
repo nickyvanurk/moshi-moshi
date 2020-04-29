@@ -27,8 +27,8 @@ export default class Matcher {
         session.peer = other.id;
         other.peer = session.id;
 
-        this.send(session, {type: 'matched', match: other.id});
-        this.send(other, {type: 'matched', match: session.id});
+        this.send(session, {type: 'matched', match: other.id, offer: true});
+        this.send(other, {type: 'matched', match: session.id, offer: false});
 
         console.log(`Matching ${session.id} with ${other.id}`);
       }
@@ -37,13 +37,27 @@ export default class Matcher {
     }
   }
 
+  handleMessage(id, data) {
+    const session = this.sessions[id];
+
+    if (!session) {
+      return console.error(`Can't find session for ${id}`);
+    }
+
+    const peer = this.sessions[session.peer];
+
+    if (!peer) {
+      return console.error(`Can't find session for peer of ${id}`);
+    }
+
+    const message = JSON.parse(data);
+
+    this.send(peer, message);
+  }
+
   unregister(id) {
     this.unmatched = this.unmatched.filter(other => id !== other);
     delete this.sessions[id];
-  }
-
-  handleMessage(id, message) {
-    console.log(`Message from ${id}: ${message}`);
   }
 
   send(session, payload) {
