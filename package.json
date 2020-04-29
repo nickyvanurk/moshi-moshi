@@ -1,0 +1,12 @@
+{
+  "name": "js-client-server-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start:client": "cd client && npm run start",
+    "start:server": "cd server && npm run start"
+  },
+  "keywords": [],
+  "author": "Nicky van Urk",
+  "license": "MIT"
+}
