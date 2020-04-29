@@ -1,11 +1,9 @@
-import express from 'express';
+import { Server } from 'ws';
+import Matcher from './matcher';
 
-const app = express();
+const wss = new Server({ port: 8000 });
+const matcher = new Matcher();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+wss.on('connection', ws => {
+  matcher.register(ws);
 });
-
-app.listen(3000, () =>
-  console.log('Example app listening on port 3000!'),
-);
