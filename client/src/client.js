@@ -1,4 +1,5 @@
 import Peer from 'simple-peer';
+import AudioVisualizer from './audio-visualizer';
 
 export default class Client {
   constructor(audioStreamTarget) {
@@ -6,6 +7,11 @@ export default class Client {
     this.stream = null;
     this.peer = null;
     this.ws = null;
+
+    this.audioVisualizer = new AudioVisualizer({
+      parentElem: document.getElementById('audio-visualizer'),
+      frequencyBarMaxHeight: 150
+    });
   }
 
   findMatch() {
@@ -82,6 +88,7 @@ export default class Client {
     peer.on('stream', (stream) => {
       this.audioStreamTarget.srcObject = stream;
       this.audioStreamTarget.play();
+      this.audioVisualizer.init(stream);
     });
 
     peer.on('connect', () => {

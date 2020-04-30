@@ -4,11 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moshi Moshi</title>
+    <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <audio controls id="audio"></audio>
-    <button id="findMatch">Find Match</button>
-    <button id="disconnectMatch">Disconnect Match</button>
-    <script src="./bundle.js"></script>
+    <div class="container">
+      <div id="audio-visualizer"></div>
+      <audio id="audio"></audio>
+      <button id="findMatch">Find Match</button>
+      <button id="disconnectMatch">Disconnect</button>
+      <script src="./bundle.js"></script>
+    </div>
   </body>
 </html>
