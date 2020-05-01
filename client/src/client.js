@@ -7,6 +7,7 @@ export default class Client {
     this.stream = null;
     this.peer = null;
     this.ws = null;
+    this.state = 'disconnected';
 
     this.audioVisualizer = new AudioVisualizer({
       parentElem: document.getElementById('audio-visualizer'),
@@ -23,6 +24,8 @@ export default class Client {
       this.ws.close();
     }
 
+    this.state = 'matching';
+
     this.ws = new WebSocket('ws://localhost:8000');
 
     this.ws.onopen = this.handleOpen.bind(this);
@@ -31,16 +34,13 @@ export default class Client {
   }
 
   disconnectMatch() {
+    this.state = 'disconnected';
+
     if (this.peer) {
       this.peer.destroy();
     }
 
-    if (this.ws) {
-      this.ws.close();
-    }
-
     this.peer = null;
-    this.ws = null;
   }
 
   handleOpen() {
@@ -93,11 +93,16 @@ export default class Client {
 
     peer.on('connect', () => {
       this.ws.close();
+      this.ws = null;
     });
 
     peer.on('close', () => {
       this.stopStreamedAudio();
       peer.destroy();
+
+      if (this.state === 'matching') {
+        this.findMatch();
+      }
     });
 
     return peer;
