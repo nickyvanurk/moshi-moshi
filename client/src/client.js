@@ -53,10 +53,7 @@ export default class Client {
       case 'matched':
         this.peer = this.getPeer(message.offer);
         break;
-      case 'offer':
-        this.peer.signal(message);
-        break;
-      case 'answer':
+      default:
         this.peer.signal(message);
         break;
     }
@@ -77,12 +74,13 @@ export default class Client {
   getPeer(offer) {
     const peer = new Peer({
       initiator: offer,
-      stream: this.stream,
-      trickle: false
+      stream: this.stream
     });
 
     peer.on('signal', (data) => {
-      this.ws.send(JSON.stringify(data));
+      if (this.ws) {
+        this.ws.send(JSON.stringify(data));
+      }
     });
 
     peer.on('stream', (stream) => {
