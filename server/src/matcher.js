@@ -47,6 +47,7 @@ export default class Matcher {
     const peer = this.sessions[session.peer];
 
     if (!peer) {
+      this.send(session, {type: 'no-peer'});
       return console.error(`Can't find session for peer of ${id}`);
     }
 

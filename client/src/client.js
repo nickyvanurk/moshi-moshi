@@ -31,7 +31,7 @@ export default class Client {
     this.state = 'matching';
     console.log(`State: ${this.state}`);
 
-    this.ws = new WebSocket('ws://localhost:8000');
+    this.ws = new WebSocket('wss://localhost:8080');
 
     this.ws.onopen = this.handleOpen.bind(this);
     this.ws.onmessage = this.handleMessage.bind(this);
@@ -59,6 +59,10 @@ export default class Client {
       case 'matched':
         this.peer = this.getPeer(message.offer);
         break;
+      case 'no-peer':
+        console.log('No peer found');
+        this.findMatch();
+        break;
       case 'offer':
       case 'answer':
         this.state = 'calling';
@@ -70,11 +74,6 @@ export default class Client {
   }
 
   handleClose() {
-    if (this.state === 'matching') {
-      console.log('WebSocket closed while matching, finding new match');
-      this.findMatch();
-    }
-
     console.log('WebSocket closed');
   }
 
