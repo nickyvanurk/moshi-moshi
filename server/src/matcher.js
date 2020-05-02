@@ -11,12 +11,12 @@ export default class Matcher {
     const id = uuidv4();
     const session = { id, ws };
 
-    this.sessions[id] = session;
-    this.tryMatch(session);
-
     ws.on('close', () => this.unregister(id));
     ws.on('error', () => this.unregister(id));
     ws.on('message', (data) => this.handleMessage(id, data.toString()));
+
+    this.sessions[id] = session;
+    this.tryMatch(session);
   }
 
   tryMatch(session) {

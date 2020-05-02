@@ -24,7 +24,12 @@ export default class Client {
       this.ws.close();
     }
 
+    if (this.peer) {
+      this.disconnectMatch();
+    }
+
     this.state = 'matching';
+    console.log(`State: ${this.state}`);
 
     this.ws = new WebSocket('ws://localhost:8000');
 
@@ -35,6 +40,7 @@ export default class Client {
 
   disconnectMatch() {
     this.state = 'disconnected';
+    console.log(`State: ${this.state}`);
 
     if (this.peer) {
       this.peer.destroy();
@@ -53,6 +59,10 @@ export default class Client {
       case 'matched':
         this.peer = this.getPeer(message.offer);
         break;
+      case 'offer':
+      case 'answer':
+        this.state = 'calling';
+        console.log(`State: ${this.state}`);
       default:
         this.peer.signal(message);
         break;
@@ -60,6 +70,11 @@ export default class Client {
   }
 
   handleClose() {
+    if (this.state === 'matching') {
+      console.log('WebSocket closed while matching, finding new match');
+      this.findMatch();
+    }
+
     console.log('WebSocket closed');
   }
 
@@ -98,7 +113,7 @@ export default class Client {
       this.stopStreamedAudio();
       peer.destroy();
 
-      if (this.state === 'matching') {
+      if (this.state === 'calling') {
         this.findMatch();
       }
     });
