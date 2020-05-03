@@ -25,7 +25,7 @@ export default class Client {
       return;
     }
 
-    this.state = 'matching';
+    this.setState('matching');
     console.log(`State: ${this.state}`);
 
     this.ws = new WebSocket('ws://localhost:8000');
@@ -36,7 +36,7 @@ export default class Client {
   }
 
   disconnectMatch() {
-    this.state = 'disconnected';
+    this.setState('disconnected');
     console.log(`State: ${this.state}`);
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -71,7 +71,7 @@ export default class Client {
         break;
       case 'offer':
       case 'answer':
-        this.state = 'calling';
+        this.setState('calling');
         console.log(`State: ${this.state}`);
       default:
         this.peer.signal(message);
@@ -133,5 +133,10 @@ export default class Client {
 
   showElement(element) {
     element.style.display = 'block';
+  }
+
+  setState(state) {
+    this.state = state;
+    document.querySelector('#status').innerText = state;
   }
 }
