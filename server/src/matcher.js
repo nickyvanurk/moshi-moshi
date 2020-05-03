@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default class Matcher {
   constructor() {
-    this.sessions = {};
+    this.sessions = new Map();
     this.unmatched = [];
   }
 
@@ -11,17 +11,18 @@ export default class Matcher {
     const id = uuidv4();
     const session = { id, ws };
 
+    this.sessions.set(id, session);
+    this.tryMatch(session);
+
     ws.on('close', () => this.unregister(id));
     ws.on('error', () => this.unregister(id));
     ws.on('message', (data) => this.handleMessage(id, data.toString()));
-
-    this.sessions[id] = session;
-    this.tryMatch(session);
   }
 
   tryMatch(session) {
     if (this.unmatched.length > 0) {
-      const other = this.sessions[this.unmatched.shift()];
+      const match = this.unmatched.shift();
+      const other = this.sessions.get(match);
 
       if (other) {
         session.peer = other.id;
@@ -38,13 +39,13 @@ export default class Matcher {
   }
 
   handleMessage(id, data) {
-    const session = this.sessions[id];
+    const session = this.sessions.get(id);
 
     if (!session) {
       return console.error(`Can't find session for ${id}`);
     }
 
-    const peer = this.sessions[session.peer];
+    const peer = this.sessions.get(session.peer);
 
     if (!peer) {
       this.send(session, {type: 'no-peer'});
@@ -58,7 +59,7 @@ export default class Matcher {
 
   unregister(id) {
     this.unmatched = this.unmatched.filter(other => id !== other);
-    delete this.sessions[id];
+    this.sessions.delete(id);
   }
 
   send(session, payload) {
