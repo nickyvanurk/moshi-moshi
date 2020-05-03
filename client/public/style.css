@@ -38,6 +38,8 @@ button {
 
 .container {
   width: 300px;
+  height: 300px;
+  position: relative;
 }
 
 #audio-visualizer {
@@ -55,12 +57,29 @@ button {
   background: #558887;
 }
 
+svg {
+  position: absolute;
+  bottom: 0;
+  width: 60px;
+  height: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+svg .phone-bg {
+  background:white;
+  width: 50%;
+  height: 50%;
+}
+
 #findMatch {
-  margin-left: 5%;
+  fill: #4ed964;
 }
 
 #disconnectMatch {
-  width: 45%
+  fill: #ff3a31;
+  display: none;
 }
 
 @media screen and (min-width: 420px) {

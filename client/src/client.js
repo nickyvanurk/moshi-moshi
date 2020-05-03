@@ -13,6 +13,11 @@ export default class Client {
       parentElem: document.getElementById('audio-visualizer'),
       frequencyBarMaxHeight: 150
     });
+
+    this.findMatchButton = document.querySelector('#findMatch');
+    this.hangUpButton = document.querySelector('#disconnectMatch');
+
+    this.hideElement(this.hangUpButton);
   }
 
   findMatch() {
@@ -42,6 +47,9 @@ export default class Client {
       this.peer.destroy();
     }
 
+    this.hideElement(this.hangUpButton);
+    this.showElement(this.findMatchButton);
+
     this.peer = null;
     this.ws = null;
   }
@@ -55,6 +63,8 @@ export default class Client {
     switch (message.type) {
       case 'matched':
         this.peer = this.getPeer(message.offer);
+        this.hideElement(this.findMatchButton);
+        this.showElement(this.hangUpButton);
         break;
       case 'peer-left':
         this.disconnectMatch();
@@ -115,5 +125,13 @@ export default class Client {
       tracks.forEach(track => track.stop());
       this.audioStreamTarget.srcObject = null;
     }
+  }
+
+  hideElement(element) {
+    element.style.display = 'none';
+  }
+
+  showElement(element) {
+    element.style.display = 'block';
   }
 }
