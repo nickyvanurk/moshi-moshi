@@ -16,22 +16,14 @@ export default class Client {
   }
 
   findMatch() {
-    if (!this.stream) {
+    if (this.state !== 'disconnected' || !this.stream) {
       return;
-    }
-
-    if (this.ws) {
-      this.ws.close();
-    }
-
-    if (this.peer) {
-      this.disconnectMatch();
     }
 
     this.state = 'matching';
     console.log(`State: ${this.state}`);
 
-    this.ws = new WebSocket('wss://localhost:8080');
+    this.ws = new WebSocket('ws://localhost:8000');
 
     this.ws.onopen = this.handleOpen.bind(this);
     this.ws.onmessage = this.handleMessage.bind(this);
@@ -42,11 +34,16 @@ export default class Client {
     this.state = 'disconnected';
     console.log(`State: ${this.state}`);
 
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.close();
+    }
+
     if (this.peer) {
       this.peer.destroy();
     }
 
     this.peer = null;
+    this.ws = null;
   }
 
   handleOpen() {
@@ -59,9 +56,8 @@ export default class Client {
       case 'matched':
         this.peer = this.getPeer(message.offer);
         break;
-      case 'no-peer':
-        console.log('No peer found');
-        this.findMatch();
+      case 'peer-left':
+        this.disconnectMatch();
         break;
       case 'offer':
       case 'answer':
@@ -103,18 +99,9 @@ export default class Client {
       this.audioVisualizer.init(stream);
     });
 
-    peer.on('connect', () => {
-      this.ws.close();
-      this.ws = null;
-    });
-
     peer.on('close', () => {
       this.stopStreamedAudio();
       peer.destroy();
-
-      if (this.state === 'calling') {
-        this.findMatch();
-      }
     });
 
     return peer;

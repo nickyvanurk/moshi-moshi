@@ -48,7 +48,6 @@ export default class Matcher {
     const peer = this.sessions.get(session.peer);
 
     if (!peer) {
-      this.send(session, {type: 'no-peer'});
       return console.error(`Can't find session for peer of ${id}`);
     }
 
@@ -58,6 +57,16 @@ export default class Matcher {
   }
 
   unregister(id) {
+    const session = this.sessions.get(id);
+
+    if (session && session.peer) {
+      const peer = this.sessions.get(session.peer);
+
+      if (peer) {
+        this.send(peer, { type: 'peer-left' });
+      }
+    }
+
     this.unmatched = this.unmatched.filter(other => id !== other);
     this.sessions.delete(id);
   }
