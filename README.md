@@ -2,7 +2,7 @@
 
 Talk with strangers around the world in real-time.
 
-![Screenshot](docs/moshimoshi.png)
+![Moshi Moshi Demo](docs/moshimoshi.gif)
 
 ## License
 
