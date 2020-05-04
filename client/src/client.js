@@ -1,13 +1,19 @@
 import Peer from 'simple-peer';
 import AudioVisualizer from './audio-visualizer';
 
+const state = {
+  disconnected: 'disconnected',
+  matching: 'connecting',
+  calling: 'calling'
+};
+
 export default class Client {
   constructor(audioStreamTarget) {
     this.audioStreamTarget = audioStreamTarget;
     this.stream = null;
     this.peer = null;
     this.ws = null;
-    this.state = 'disconnected';
+    this.state = state.disconnected;
 
     this.audioVisualizer = new AudioVisualizer({
       parentElem: document.getElementById('audio-visualizer'),
@@ -16,28 +22,21 @@ export default class Client {
 
     this.findMatchButton = document.querySelector('#findMatch');
     this.hangUpButton = document.querySelector('#disconnectMatch');
-
-    this.hideElement(this.hangUpButton);
   }
 
   findMatch() {
-    if (this.state !== 'disconnected' || !this.stream) {
+    if (this.state !== state.disconnected || !this.stream) {
       return;
     }
 
-    this.setState('matching');
-    console.log(`State: ${this.state}`);
+    this.setState(state.matching);
 
     this.ws = new WebSocket('ws://localhost:8000');
-
-    this.ws.onopen = this.handleOpen.bind(this);
     this.ws.onmessage = this.handleMessage.bind(this);
-    this.ws.onclose = this.handleClose.bind(this);
   }
 
   disconnectMatch() {
-    this.setState('disconnected');
-    console.log(`State: ${this.state}`);
+    this.setState(state.disconnected);
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.close();
@@ -47,15 +46,12 @@ export default class Client {
       this.peer.destroy();
     }
 
-    this.hideElement(this.hangUpButton);
-    this.showElement(this.findMatchButton);
-
     this.peer = null;
     this.ws = null;
-  }
 
-  handleOpen() {
-    console.log('WebSocket open');
+    if (this.handleDisconnect) {
+      this.handleDisconnect();
+    }
   }
 
   handleMessage(data) {
@@ -63,24 +59,21 @@ export default class Client {
     switch (message.type) {
       case 'matched':
         this.peer = this.getPeer(message.offer);
-        this.hideElement(this.findMatchButton);
-        this.showElement(this.hangUpButton);
+
+        if (this.handleMatch) {
+          this.handleMatch();
+        }
         break;
       case 'peer-left':
         this.disconnectMatch();
         break;
       case 'offer':
       case 'answer':
-        this.setState('calling');
-        console.log(`State: ${this.state}`);
+        this.setState(state.calling);
       default:
         this.peer.signal(message);
         break;
     }
-  }
-
-  handleClose() {
-    console.log('WebSocket closed');
   }
 
   handleMediaStream(stream) {
@@ -91,11 +84,16 @@ export default class Client {
     console.log(error);
   }
 
+  onMatch(callback) {
+    this.handleMatch = callback;
+  }
+
+  onDisconnect(callback) {
+    this.handleDisconnect = callback;
+  }
+
   getPeer(offer) {
-    const peer = new Peer({
-      initiator: offer,
-      stream: this.stream
-    });
+    const peer = new Peer({initiator: offer, stream: this.stream});
 
     peer.on('signal', (data) => {
       if (this.ws) {
@@ -125,14 +123,6 @@ export default class Client {
       tracks.forEach(track => track.stop());
       this.audioStreamTarget.srcObject = null;
     }
-  }
-
-  hideElement(element) {
-    element.style.display = 'none';
-  }
-
-  showElement(element) {
-    element.style.display = 'block';
   }
 
   setState(state) {
