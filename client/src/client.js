@@ -81,7 +81,7 @@ export default class Client {
   }
 
   handleMediaError(error) {
-    console.log(error);
+    document.querySelector('#status').innerText = error;
   }
 
   onMatch(callback) {
