@@ -31,6 +31,12 @@ npm run start:server
 
 Surf to [localhost:8080](http://localhost:8080)!
 
+## Built With
+
+* [WebRTC](https://webrtc.org/) - Real-time communication for the web
+* [Node](https://nodejs.org/en/about/) A JavaScript runtime
+* [ws](https://github.com/websockets/ws) - Node WebSocket implementation
+
 ## License
 
 This project is licensed under the [MIT License](./LICENSE.md).
