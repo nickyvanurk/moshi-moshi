@@ -31,6 +31,14 @@ npm run start:server
 
 Surf to [localhost:8080](http://localhost:8080)!
 
+## How it Works
+
+The following diagram depicts the architecture used.
+
+![Architecture diagram](docs/architecture.png)
+
+When a client is ready to match someone it will open a WebSocket connection to the Node back-end. After it finds a match to partner with it will exchange the required WebRTC data with this partner through the now two open WebSocket connections. Once the required WebRTC data is exchanged the peer to peer WebRTC connection will be established and the two clients will be able to talk to each other.
+
 ## Built With
 
 * [WebRTC](https://webrtc.org/) - Real-time communication for the web
