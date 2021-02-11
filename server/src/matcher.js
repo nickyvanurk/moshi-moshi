@@ -14,7 +14,7 @@ export default class Matcher {
     this.sessions.set(id, session);
     this.tryMatch(session);
 
-    console.log(`Trying to matching ${session.id}`);
+    console.log(`Trying to match ${session.id}`);
 
     ws.on('close', () => this.unregister(id));
     ws.on('error', () => this.unregister(id));
