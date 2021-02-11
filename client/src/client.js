@@ -3,7 +3,7 @@ import AudioVisualizer from './audio-visualizer';
 
 const state = {
   disconnected: 'disconnected',
-  matching: 'connecting',
+  matching: 'Matching...',
   calling: 'calling'
 };
 
