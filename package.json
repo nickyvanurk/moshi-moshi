@@ -5,8 +5,8 @@
   "scripts": {
     "start:client": "cd client && npm run start",
     "start:server": "cd server && npm run start",
-    "postinstall": "cd client && npm run build",
-    "start": "PROD=true npm run start:server"
+    "postinstall": "cd server && npm install && cd ../client && npm install",
+    "start": "cd server && npm run prod"
   },
   "keywords": [],
   "author": "Nicky van Urk",

@@ -31,7 +31,8 @@ export default class Client {
 
     this.setState(state.matching);
 
-    this.ws = new WebSocket(`ws://localhost:${process.env.PORT || 8080}`);
+    const host = location.origin.replace(/^http/, 'ws');
+    this.ws = new WebSocket(host);
     this.ws.onmessage = this.handleMessage.bind(this);
   }
 

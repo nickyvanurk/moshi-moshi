@@ -1,7 +1,11 @@
 import { Server } from 'ws';
 import Matcher from './matcher';
+const express = require('express');
+const app = express();
+const path = require('path');
+const port = process.env.PORT || 3000;
 
-const wss = new Server({ port: process.env.PORT || 8080 });
+const wss = new Server({ server: app });
 const matcher = new Matcher();
 
 wss.on('connection', ws => {
@@ -9,11 +13,8 @@ wss.on('connection', ws => {
 });
 
 if (process.env.PROD) {
-  const express = require('express');
-  const app = express();
-
-  app.use(express.static(path.join(__dirname, '../../client/public')));
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/public/index.html'));
-  })
+  app
+    .use(express.static(path.join(__dirname, '../../client/public')))
+    .get('*', (_req, res) => res.sendFile(path.join(__dirname, '../../client/public/index.html')))
+    .listen(port, () => console.log(`Listening on ${port}`));
 }
