@@ -5,16 +5,17 @@ const app = express();
 const path = require('path');
 const port = process.env.PORT || 3000;
 
-const wss = new Server({ server: app });
+if (process.env.PROD) {
+  app
+    .use(express.static(path.join(__dirname, '../../client/public')))
+    .get('*', (_req, res) => res.sendFile(path.join(__dirname, '../../client/public/index.html')))
+}
+
+const server = app.listen(port, () => console.log(`Listening on ${port}`));
+
+const wss = new Server({ server });
 const matcher = new Matcher();
 
 wss.on('connection', ws => {
   matcher.register(ws);
 });
-
-if (process.env.PROD) {
-  app
-    .use(express.static(path.join(__dirname, '../../client/public')))
-    .get('*', (_req, res) => res.sendFile(path.join(__dirname, '../../client/public/index.html')))
-    .listen(port, () => console.log(`Listening on ${port}`));
-}
