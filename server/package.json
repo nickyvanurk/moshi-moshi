@@ -4,17 +4,19 @@
   "description": "",
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "build": "babel src -d build"
+    "build": "babel src -d build",
+    "postinstall": "npm install"
   },
   "keywords": [],
   "author": "Nicky van Urk",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.17.1",
     "uuid": "^7.0.3",
     "ws": "^7.2.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
+    "@babel/cli": "^7.12.13",
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
